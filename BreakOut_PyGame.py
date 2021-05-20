@@ -2,9 +2,9 @@ import pygame
 
 # Screen set
 pygame.init()
-screen_size = (1000, 720)
+screen_size = (1280, 720)
 screen = pygame.display.set_mode(screen_size)
-
+screen_bg = pygame.image.load("assets/atari_screen.png")
 game_clock = pygame.time.Clock()
 game_cycle = True
 
@@ -39,11 +39,11 @@ while game_cycle:
     ball_y += ball_dy
 
     # Colliders
-    if ball_x < 0:
+    if ball_x < 224:
         ball_dx *= -1
-    if ball_x > 1000:
+    if ball_x > 1040:
         ball_dx *= -1
-    if ball_y < 60:
+    if ball_y < 104:
         ball_dy *= -1
     if ball_y > 720:
         # YOU LOSE
@@ -58,6 +58,7 @@ while game_cycle:
 
     # Screen update
     screen.fill((0, 0, 0))
+    screen.blit(screen_bg, (0, 0))
     screen.blit(player, (player_x, 680))
     screen.blit(ball, (ball_x, ball_y))
     pygame.display.flip()

@@ -1,4 +1,6 @@
 import pygame
+# Bricks Size 4x8 -> 32x64
+# Player size 4x16 -> 32x128
 
 # Screen set
 pygame.init()
@@ -19,6 +21,24 @@ ball_dx = 5
 ball_dy = 7
 ball_x = 640
 ball_y = 360
+
+# Game Variables
+cols = 13
+rows = 7
+brick_height = 32
+brick_width = 64
+
+brick_list = []
+brick_color_list = [(200, 73, 70), (180, 123, 46), (197, 109, 59),
+                    (180, 123, 46), (163, 162, 43), (70, 172, 65),
+                    (62, 72, 197)]
+
+for row in range(rows):
+    for col in range(cols):
+        x = 224 + (brick_width * col)
+        y = 104 + (brick_height * row)
+        block = pygame.Rect(x, y, brick_width, brick_height)
+        brick_list.append(block)
 
 pygame.mouse.set_visible(False)
 
@@ -61,6 +81,23 @@ while game_cycle:
     screen.blit(screen_bg, (0, 0))
     screen.blit(player, (player_x, 680))
     screen.blit(ball, (ball_x, ball_y))
+
+    color_try = 0
+    color_row = 0
+    # Bricks
+    for block in brick_list:
+        # Select Color
+        if color_row > 6:
+            color_row = 0
+        # Draw Bricks
+        pygame.draw.rect(screen, brick_color_list[color_row], block)
+
+        # Count color at List
+        color_try += 1
+        if (color_try // 13) == 1:
+            color_row += 1
+            color_try = 0
+
     pygame.display.flip()
     game_clock.tick(60)
 

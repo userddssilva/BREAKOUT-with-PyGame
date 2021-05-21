@@ -14,29 +14,28 @@ game_cycle = True
 player = pygame.image.load("assets/player.png")
 player_move_left = False
 player_move_right = False
-
+player_x = 640
 # Ball
 ball = pygame.image.load("assets/ball.png")
 ball_dx = 5
-ball_dy = 7
+ball_dy = 10
 ball_x = 640
 ball_y = 360
 
 # Game Variables
 cols = 13
-rows = 7
+rows = 6
 brick_height = 32
 brick_width = 64
 
 brick_list = []
-brick_color_list = [(200, 73, 70), (180, 123, 46), (197, 109, 59),
-                    (180, 123, 46), (163, 162, 43), (70, 172, 65),
+brick_color_list = [(200, 73, 70),(197, 109, 59), (180, 123, 46), (163, 162, 43), (70, 172, 65),
                     (62, 72, 197)]
 
 for row in range(rows):
     for col in range(cols):
         x = 224 + (brick_width * col)
-        y = 104 + (brick_height * row)
+        y = 154 + (brick_height * row)
         block = pygame.Rect(x, y, brick_width, brick_height)
         brick_list.append(block)
 
@@ -50,9 +49,14 @@ while game_cycle:
 
     # Player Movement
     player_XY = pygame.mouse.get_pos()
-    player_x = player_XY[0]
-    if player_x > 850:
-        player_x = 850
+
+    player_x = player_XY[0] // 1
+        
+    
+    if player_x > 905:
+        player_x = 905
+    if player_x < 224:
+        player_x = 224
 
     # Ball Movement
     ball_x += ball_dx
@@ -70,10 +74,10 @@ while game_cycle:
         ball_dy *= -1
 
     # Collider with Player
-    if ball_y > 680 and not (ball_y > 700):
+    if ball_y > 658 and not (ball_y > 700):
         if player_x < ball_x + 150:
             if player_x + 150 > ball_x:
-                ball_y = 680
+                ball_y = 658
                 ball_dy *= -1
 
     # Screen update
@@ -87,7 +91,7 @@ while game_cycle:
     # Bricks
     for block in brick_list:
         # Select Color
-        if color_row > 6:
+        if color_row > 5:
             color_row = 0
         # Draw Bricks
         pygame.draw.rect(screen, brick_color_list[color_row], block)

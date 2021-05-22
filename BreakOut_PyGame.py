@@ -8,6 +8,7 @@ pygame.init()
 screen_size = (1280, 720)
 screen = pygame.display.set_mode(screen_size)
 screen_bg = pygame.image.load("assets/atari_screen.png")
+screen_bg_pause = pygame.image.load("assets/Start_screen.png")
 game_clock = pygame.time.Clock()
 game_cycle = True
 
@@ -127,6 +128,9 @@ while game_cycle:
             if ball.colliderect(block[0]):
                 ball_dy *= -1
                 brick_list.remove(block)
+    else:
+        screen.fill((0, 0, 0))
+        screen.blit(screen_bg_pause, (0, 0))
 
     pygame.display.flip()
     game_clock.tick(60)

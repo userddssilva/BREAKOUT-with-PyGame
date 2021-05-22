@@ -26,10 +26,11 @@ player_score = 0
 ball_dx = 5
 ball_dy = 10
 ball_x = 640
-ball_y = 360
+ball_y = 450
 ball = pygame.Rect(ball_x, ball_x, 32, 32)
 
 # Game Variables
+game_pause = True
 cols = 12
 rows = 6
 brick_height = 32
@@ -59,66 +60,68 @@ while game_cycle:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game_cycle = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                game_pause = False
 
-    # Player Movement
-    player_XY = pygame.mouse.get_pos()
+    if not game_pause:
+        # Player Movement
+        player_XY = pygame.mouse.get_pos()
 
-    player_x = player_XY[0] // 1
-    if player_x > 928:
-        player_x = 928
-    if player_x < 224:
-        player_x = 224
-    player = pygame.Rect(player_x, 664, 128, 16)
+        player_x = player_XY[0] // 1
+        if player_x > 928:
+            player_x = 928
+        if player_x < 224:
+            player_x = 224
+        player = pygame.Rect(player_x, 664, 128, 16)
 
-    # Ball Movement
-    ball_x += ball_dx
-    ball_y += ball_dy
-    # Colliders
-    if ball_x < 224:
-        ball_dx *= -1
-    if ball_x > 1040:
-        ball_dx *= -1
-    if ball_y < 104:
-        ball_dy *= -1
-    if ball_y > 720:
-        # YOU LOSE
-        ball_dy *= -1
-    ball = pygame.Rect(ball_x, ball_y, 16, 16)
-
-    # Collider with Player
-    if ball_y > 658 and not (ball_y > 700):
-        if player_x < ball_x + 150:
-            if player_x + 150 > ball_x:
-                ball_y = 658
-                ball_dy *= -1
-
-    # Screen update
-    screen.fill((0, 0, 0))
-    screen.blit(screen_bg, (0, 0))
-    pygame.draw.rect(screen, (255, 255, 255), player)
-    pygame.draw.rect(screen, (255, 255, 255), ball)
-
-    color_try = 0
-    color_row = 0
-
-    # Bricks
-    for block in brick_list:
-        # Select Color
-        if color_row > 5:
-            color_row = 0
-        # Draw Bricks
-        pygame.draw.rect(screen, block[1], block[0])
-
-        # Count color at List
-        color_try += 1
-        if (color_try // 13) == 1:
-            color_row += 1
-            color_try = 0
-
-    for block in brick_list:
-        if ball.colliderect(block[0]):
+        # Ball Movement
+        ball_x += ball_dx
+        ball_y += ball_dy
+        # Colliders
+        if ball_x < 224:
+            ball_dx *= -1
+        if ball_x > 1040:
+            ball_dx *= -1
+        if ball_y < 104:
             ball_dy *= -1
-            brick_list.remove(block)
+        # Lose Condition
+        if ball_y > 720:
+            game_pause = True
+            menu_font = pygame.font.Font('assets/PressStart2P.ttf', 20)
+            menu_text = menu_font.render('Press SPACE', True, (255, 255, 255), (0, 0, 0))
+            menu_text_rect = menu_text.get_rect()
+            menu_text_rect.center = (650, 500)
+            ball_x = 640
+            ball_y = 450
+            ball = pygame.Rect(ball_x, ball_y, 16, 16)
+            pygame.draw.rect(screen, (255, 255, 255), ball)
+            screen.blit(menu_text, menu_text_rect)
+            pygame.display.update()
+
+        ball = pygame.Rect(ball_x, ball_y, 16, 16)
+
+        # Collider with Player
+        if ball.colliderect(player):
+            ball_dy *= -1
+
+        # Screen update
+        screen.fill((0, 0, 0))
+        screen.blit(screen_bg, (0, 0))
+        pygame.draw.rect(screen, (255, 255, 255), player)
+        pygame.draw.rect(screen, (255, 255, 255), ball)
+        if game_pause:
+            screen.blit(menu_text, menu_text_rect)
+
+        # Bricks
+        for block in brick_list:
+            # Draw Bricks
+            pygame.draw.rect(screen, block[1], block[0])
+
+        for block in brick_list:
+            if ball.colliderect(block[0]):
+                ball_dy *= -1
+                brick_list.remove(block)
 
     pygame.display.flip()
     game_clock.tick(60)

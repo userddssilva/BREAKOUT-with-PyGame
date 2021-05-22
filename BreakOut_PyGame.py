@@ -22,6 +22,7 @@ player_move_left = False
 player_move_right = False
 player_x = 640
 player_score = 0
+player_hp = 4
 
 # Ball
 ball_dx = 5
@@ -102,19 +103,33 @@ def update_score():
     score_5 = current_scores[4]
 
     if score > int(score_1):
+        score_5 = score_4
+        score_4 = score_3
+        score_3 = score_2
+        score_2 = score_1
         score_1 = score
+
     elif score > int(score_2):
+        score_5 = score_4
+        score_4 = score_3
+        score_3 = score_2
         score_2 = score
     elif score > int(score_3):
+        score_5 = score_4
+        score_4 = score_3
         score_3 = score
+
     elif score > int(score_4):
+        score_5 = score_4
         score_4 = score
+
     elif score > int(score_5):
         score_5 = score
 
     f = open("score.txt", "w")
     f.write(str(score_1) + ";" + str(score_2) + ";" + str(score_3)
             + ";" + str(score_4) + ";" + str(score_5) + ";")
+    print("Updatado o score")
     f.close()
 
 
@@ -138,6 +153,10 @@ def load_score():
     screen.blit(new_highest_score_text, highest_score_text_rect_fifth)
 
 
+# Start Screen
+screen.blit(screen_bg_pause, (0, 0))
+load_score()
+
 # Start the game Cycle
 while game_cycle:
     if not brick_list:
@@ -148,8 +167,10 @@ while game_cycle:
             game_cycle = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                score = 0
                 game_pause = False
+            if event.key == pygame.K_ESCAPE:
+                if game_pause:
+                    game_cycle = False
 
     if not game_pause:
         # Allow new score
@@ -184,18 +205,31 @@ while game_cycle:
             pygame.draw.rect(screen, (255, 255, 255), ball)
             screen.blit(pause_text, pause_text_rect)
             pygame.display.update()
+            player_hp -= 1
+            ball_dy = 10
 
         ball = pygame.Rect(ball_x, ball_y, 16, 16)
 
         # Collider with Player
         if ball.colliderect(player):
             ball_dy *= -1
+            if ball_x > player_x + 64:
+                ball_dx = 7
+            else:
+                ball_dx = -7
+
+        HUD_text = menu_font.render('Score: ' + str(score) + '       HP: ' + str(player_hp), True, (255, 255, 255),
+                                    (0, 0, 0))
+        HUD_text_rect = HUD_text.get_rect()
+        HUD_text_rect.center = (600, 125)
 
         # Screen update
         screen.fill((0, 0, 0))
         screen.blit(screen_bg, (0, 0))
         pygame.draw.rect(screen, (255, 255, 255), player)
         pygame.draw.rect(screen, (255, 255, 255), ball)
+        screen.blit(HUD_text, HUD_text_rect)
+
         if game_pause:
             screen.blit(pause_text, pause_text_rect)
 
@@ -214,23 +248,46 @@ while game_cycle:
                     score += 2
                 elif block[0][1] == 302:
                     score += 4
+                    if ball_dy == 10:
+                        ball_dy = 13
+                    elif ball_dy == -10:
+                        ball_dy = -13
                 elif block[0][1] == 265:
                     score += 6
+                    if ball_dy == 13:
+                        ball_dy = 15
+                    elif ball_dy == -13:
+                        ball_dy = -15
                 elif block[0][1] == 228:
                     score += 8
+                    if ball_dy == 15:
+                        ball_dy = 18
+                    elif ball_dy == -15:
+                        ball_dy = -18
                 elif block[0][1] == 191:
                     score += 10
+                    if ball_dy == 18:
+                        ball_dy = 19
+                    elif ball_dy == -18:
+                        ball_dy = -19
                 elif block[0][1] == 154:
                     score += 12
+                    if ball_dy == 19:
+                        ball_dy = 23
+                    elif ball_dy == -19:
+                        ball_dy = -23
 
     else:
-        # Update score
-        if not updated_score and score > 0:
+
+        if player_hp <= 0:
+            brick_list = []
             update_score()
             updated_score = True
-        # Pause and show score
-        screen.blit(screen_bg_pause, (0, 0))
-        load_score()
+            # Pause and show score
+            screen.blit(screen_bg_pause, (0, 0))
+            load_score()
+            player_hp = 4
+            score = 0
 
     pygame.display.flip()
     game_clock.tick(60)

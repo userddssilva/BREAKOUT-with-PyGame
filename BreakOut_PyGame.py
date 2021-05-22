@@ -107,9 +107,9 @@ def update_score():
         score_2 = score
     elif score > int(score_3):
         score_3 = score
-    elif score > int(score_3):
-        score_4 = score
     elif score > int(score_4):
+        score_4 = score
+    elif score > int(score_5):
         score_5 = score
 
     f = open("score.txt", "w")

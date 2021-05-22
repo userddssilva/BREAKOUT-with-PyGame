@@ -1,5 +1,5 @@
-import random
 import pygame
+
 # Bricks Size 4x8 -> 32x64
 # Player size 4x16 -> 32x128
 
@@ -40,14 +40,22 @@ brick_list = []
 # RGB Colors
 brick_color_list = [(200, 73, 70), (197, 109, 59), (180, 123, 46),
                     (163, 162, 43), (70, 172, 65), (62, 72, 197)]
-# Define the brick_list
-for row in range(rows):
-    for col in range(cols):
-        x = 224 + (brick_width * col * 1.08)
-        y = 154 + (brick_height * row * 1.16)
-        block = pygame.Rect(x, y, brick_width, brick_height)
-        block2 = [block, brick_color_list[row]]
-        brick_list.append(block2)
+# Pause text
+menu_font = pygame.font.Font('assets/PressStart2P.ttf', 20)
+pause_text = menu_font.render('Press SPACE', True, (255, 255, 255), (0, 0, 0))
+pause_text_rect = pause_text.get_rect()
+pause_text_rect.center = (650, 500)
+
+
+def list_blocks():
+    # Define the brick_list
+    for row in range(rows):
+        for col in range(cols):
+            x = 224 + (brick_width * col * 1.08)
+            y = 154 + (brick_height * row * 1.16)
+            block_react = pygame.Rect(x, y, brick_width, brick_height)
+            block2 = [block_react, brick_color_list[row]]
+            brick_list.append(block2)
 
 
 # set mouse hidden
@@ -55,7 +63,8 @@ pygame.mouse.set_visible(False)
 
 # Start the game Cycle
 while game_cycle:
-
+    if not brick_list:
+        list_blocks()
     # End Game
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -88,15 +97,11 @@ while game_cycle:
         # Lose Condition
         if ball_y > 720:
             game_pause = True
-            menu_font = pygame.font.Font('assets/PressStart2P.ttf', 20)
-            menu_text = menu_font.render('Press SPACE', True, (255, 255, 255), (0, 0, 0))
-            menu_text_rect = menu_text.get_rect()
-            menu_text_rect.center = (650, 500)
             ball_x = 640
             ball_y = 450
             ball = pygame.Rect(ball_x, ball_y, 16, 16)
             pygame.draw.rect(screen, (255, 255, 255), ball)
-            screen.blit(menu_text, menu_text_rect)
+            screen.blit(pause_text, pause_text_rect)
             pygame.display.update()
 
         ball = pygame.Rect(ball_x, ball_y, 16, 16)
@@ -111,7 +116,7 @@ while game_cycle:
         pygame.draw.rect(screen, (255, 255, 255), player)
         pygame.draw.rect(screen, (255, 255, 255), ball)
         if game_pause:
-            screen.blit(menu_text, menu_text_rect)
+            screen.blit(pause_text, pause_text_rect)
 
         # Bricks
         for block in brick_list:

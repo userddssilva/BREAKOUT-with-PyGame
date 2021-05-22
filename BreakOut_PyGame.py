@@ -1,5 +1,4 @@
 import random
-
 import pygame
 # Bricks Size 4x8 -> 32x64
 # Player size 4x16 -> 32x128
@@ -18,10 +17,11 @@ pygame.mixer.music.set_volume(0.05)
 pygame.mixer.music.play(-1)
 
 # Player
-
 player_move_left = False
 player_move_right = False
 player_x = 640
+player_score = 0
+
 # Ball
 ball_dx = 5
 ball_dy = 10
@@ -34,20 +34,25 @@ cols = 12
 rows = 6
 brick_height = 32
 brick_width = 64.3
-
+# Position + RGB Color
 brick_list = []
-brick_color_list = [(200, 73, 70),(197, 109, 59), (180, 123, 46), (163, 162, 43), (70, 172, 65),
-                    (62, 72, 197)]
-
+# RGB Colors
+brick_color_list = [(200, 73, 70), (197, 109, 59), (180, 123, 46),
+                    (163, 162, 43), (70, 172, 65), (62, 72, 197)]
+# Define the brick_list
 for row in range(rows):
     for col in range(cols):
         x = 224 + (brick_width * col * 1.08)
         y = 154 + (brick_height * row * 1.16)
         block = pygame.Rect(x, y, brick_width, brick_height)
-        brick_list.append(block)
+        block2 = [block, brick_color_list[row]]
+        brick_list.append(block2)
 
+
+# set mouse hidden
 pygame.mouse.set_visible(False)
 
+# Start the game Cycle
 while game_cycle:
 
     # End Game
@@ -102,7 +107,7 @@ while game_cycle:
         if color_row > 5:
             color_row = 0
         # Draw Bricks
-        pygame.draw.rect(screen, brick_color_list[random.randint(0,5)], block)
+        pygame.draw.rect(screen, block[1], block[0])
 
         # Count color at List
         color_try += 1
@@ -111,7 +116,7 @@ while game_cycle:
             color_try = 0
 
     for block in brick_list:
-        if ball.colliderect(block):
+        if ball.colliderect(block[0]):
             ball_dy *= -1
             brick_list.remove(block)
 

@@ -269,8 +269,7 @@ while game_cycle:
         for block in brick_list:
             if ball.colliderect(block[0]):
                 ball_dy *= -1
-                ball_x == block[0][0]
-                ball_y == block[0][1]
+
                 if (ball_x <= block[0][0]) or (ball_x >= block[0][0] + 64.3):
                     ball_dx *= -1
 

@@ -1,5 +1,6 @@
 import pygame
-
+import random
+import time
 # Bricks Size 4x8 -> 32x64
 # Player size 4x16 -> 32x128
 
@@ -16,6 +17,24 @@ game_cycle = True
 pygame.mixer.music.load("assets/soundtrack.mp3")
 pygame.mixer.music.set_volume(0.05)
 pygame.mixer.music.play(-1)
+# FX Sounds
+SFX_volume = 0.08
+SFX_red = pygame.mixer.Sound("assets/red.mp3")
+SFX_red.set_volume(SFX_volume)
+SFX_brown = pygame.mixer.Sound("assets/brown.mp3")
+SFX_brown.set_volume(SFX_volume)
+SFX_orange = pygame.mixer.Sound("assets/orange.mp3")
+SFX_orange.set_volume(SFX_volume)
+SFX_yellow = pygame.mixer.Sound("assets/yellow.mp3")
+SFX_yellow.set_volume(SFX_volume)
+SFX_green = pygame.mixer.Sound("assets/green.mp3")
+SFX_green.set_volume(SFX_volume)
+SFX_blue = pygame.mixer.Sound("assets/blue.mp3")
+SFX_blue.set_volume(SFX_volume)
+SFX_bounce = pygame.mixer.Sound("assets/bounce.mp3")
+SFX_bounce.set_volume(SFX_volume)
+SFX_loose = pygame.mixer.Sound("assets/loose.mp3")
+SFX_loose.set_volume(0.3)
 
 # Player
 player_move_left = False
@@ -129,7 +148,7 @@ def update_score():
     f = open("score.txt", "w")
     f.write(str(score_1) + ";" + str(score_2) + ";" + str(score_3)
             + ";" + str(score_4) + ";" + str(score_5) + ";")
-    print("Updatado o score")
+
     f.close()
 
 
@@ -188,14 +207,20 @@ while game_cycle:
 
         # Ball Movement
         ball_x += ball_dx
-        ball_y += ball_dy
+        ball_y += ball_dy * 1.3
         # Colliders
         if ball_x < 224:
             ball_dx *= -1
+            ball_x = 225
+            SFX_bounce.play()
         if ball_x > 1040:
             ball_dx *= -1
+            ball_x = 1039
+            SFX_bounce.play()
         if ball_y < 104:
             ball_dy *= -1
+            ball_y = 105
+            SFX_bounce.play()
         # Lose Condition
         if ball_y > 720:
             game_pause = True
@@ -206,6 +231,7 @@ while game_cycle:
             screen.blit(pause_text, pause_text_rect)
             pygame.display.update()
             player_hp -= 1
+            SFX_loose.play()
             ball_dy = 10
 
         ball = pygame.Rect(ball_x, ball_y, 16, 16)
@@ -213,10 +239,12 @@ while game_cycle:
         # Collider with Player
         if ball.colliderect(player):
             ball_dy *= -1
+            ball_y = 654
+            SFX_bounce.play()
             if ball_x > player_x + 64:
-                ball_dx = 7
+                ball_dx = random.randint(7, 11)
             else:
-                ball_dx = -7
+                ball_dx = random.randint(-11, -7)
 
         HUD_text = menu_font.render('Score: ' + str(score) + '       HP: ' + str(player_hp), True, (255, 255, 255),
                                     (0, 0, 0))
@@ -241,41 +269,52 @@ while game_cycle:
         for block in brick_list:
             if ball.colliderect(block[0]):
                 ball_dy *= -1
+                ball_x == block[0][0]
+                ball_y == block[0][1]
+                if (ball_x <= block[0][0]) or (ball_x >= block[0][0] + 64.3):
+                    ball_dx *= -1
+
                 brick_list.remove(block)
 
                 # Sum point score
                 if block[0][1] == 339:
                     score += 2
+                    SFX_blue.play()
                 elif block[0][1] == 302:
                     score += 4
-                    if ball_dy == 10:
+                    SFX_green.play()
+                    if ball_dy <= 10:
                         ball_dy = 13
-                    elif ball_dy == -10:
+                    elif ball_dy >= -10:
                         ball_dy = -13
                 elif block[0][1] == 265:
                     score += 6
-                    if ball_dy == 13:
+                    SFX_yellow.play()
+                    if ball_dy <= 13:
                         ball_dy = 15
-                    elif ball_dy == -13:
+                    elif ball_dy >= -13:
                         ball_dy = -15
                 elif block[0][1] == 228:
                     score += 8
-                    if ball_dy == 15:
+                    SFX_orange.play()
+                    if ball_dy <= 15:
                         ball_dy = 18
-                    elif ball_dy == -15:
+                    elif ball_dy >= -15:
                         ball_dy = -18
                 elif block[0][1] == 191:
                     score += 10
-                    if ball_dy == 18:
+                    SFX_brown.play()
+                    if ball_dy <= 18:
                         ball_dy = 19
-                    elif ball_dy == -18:
+                    elif ball_dy >= -18:
                         ball_dy = -19
                 elif block[0][1] == 154:
                     score += 12
-                    if ball_dy == 19:
-                        ball_dy = 23
-                    elif ball_dy == -19:
-                        ball_dy = -23
+                    SFX_red.play()
+                    if ball_dy <= 19:
+                        ball_dy = 27
+                    elif ball_dy >= -19:
+                        ball_dy = -27
 
     else:
 
@@ -290,6 +329,6 @@ while game_cycle:
             score = 0
 
     pygame.display.flip()
-    game_clock.tick(60)
+    time.sleep(1/60)
 
 pygame.quit()
